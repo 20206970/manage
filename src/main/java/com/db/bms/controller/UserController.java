@@ -17,7 +17,7 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     // 登录
     @RequestMapping(value = "/login")
@@ -60,8 +60,8 @@ public class UserController {
 
     // 注册
     @RequestMapping(value = "/register")
-    public Integer register(String username, String password){
-        return userService.register(username, password);
+    public Integer register(String username, String password, Integer identify, String question, String answer){
+        return userService.register(username, password, identify, question, answer);
     }
 
     // 修改密码
@@ -69,16 +69,16 @@ public class UserController {
     public Integer alterPassword(Integer userid, String username, Byte isadmin, String oldPassword, String newPassword){
         //检查旧密码是否正确
         User userObj = new User();
-        userObj.setUserid(userid);
+        userObj.setUserId(userid);
         userObj.setUsername(username);
-        userObj.setUserpassword(oldPassword);
+        userObj.setUserPassword(oldPassword);
         userObj.setIsadmin(isadmin);
 
         User user = userService.login(userObj);
         if(user == null) {  //旧密码不正确
             return 0;
         } else {    //旧密码正确，设置新密码
-            userService.setPassword(userObj.getUserid(), newPassword);
+            userService.setPassword(userObj.getUserId(), newPassword);
             return 1;
         }
     }

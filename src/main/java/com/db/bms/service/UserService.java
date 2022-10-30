@@ -15,7 +15,7 @@ public interface UserService {
 
     void removeUser(String token);
 
-    Integer register(String username, String password);
+    Integer register(String username, String password, Integer identify, String question, String answer);
 
     void setPassword(Integer id, String password);
 

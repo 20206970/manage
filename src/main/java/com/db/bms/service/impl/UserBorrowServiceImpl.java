@@ -3,14 +3,16 @@ package com.db.bms.service.impl;
 import com.db.bms.mapper.UserBorrowMapper;
 import com.db.bms.model.UserBorrow;
 import com.db.bms.service.UserBorrowService;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 @Service
 public class UserBorrowServiceImpl implements UserBorrowService {
-    @Autowired
+    @Resource
     private UserBorrowMapper userBorrowMapper;
     @Override
     public Integer getSearchCount(Map<String, Object> params) {

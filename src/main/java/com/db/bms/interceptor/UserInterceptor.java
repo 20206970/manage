@@ -14,7 +14,7 @@ public class UserInterceptor implements HandlerInterceptor {
         User user = (User) request.getSession().getAttribute("userObj");
 
         if(user == null) {  //没有登录
-            System.out.println("没有登录!不能访问!");
+            //System.out.println("没有登录!不能访问!");
             // 重定向到登录界面
             response.sendRedirect(request.getContextPath() + "/index.html");
             return false;

@@ -19,9 +19,9 @@ public interface UserMapper {
 
     int updateByPrimaryKey(User record);
 
-    User selectByUsernameAndPasswordAndIsAdmin(@Param("username") String username,
+    User selectByUsernameAndPasswordAndIdentify(@Param("username") String username,
                                   @Param("password") String password,
-                                  @Param("isAdmin") Byte isAdmin);
+                                  @Param("identify") Integer identify);
 
     User selectByUsername(String username);
 
@@ -34,4 +34,6 @@ public interface UserMapper {
     int selectCountBySearch(Map<String, Object> params);
 
     List<User> selectBySearch(Map<String, Object> params);
+
+    List<User> selectAllTenants();
 }

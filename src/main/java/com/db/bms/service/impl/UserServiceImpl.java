@@ -8,6 +8,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(User user) {
-        return userMapper.selectByUsernameAndPasswordAndIsAdmin(user.getUsername(), user.getUserpassword(), user.getIsadmin());
+        return userMapper.selectByUsernameAndPasswordAndIdentify(user.getUsername(), user.getUserPassword(), user.getIdentify());
     }
 
     @Override
@@ -47,22 +48,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer register(String username, String password) {
+    public Integer register(String username, String password, Integer identify, String question, String answer) {
         User tmp = userMapper.selectByUsername(username);
         if(tmp != null) return 0;  //账号重复
 
         User user = new User();
         user.setUsername(username);
-        user.setUserpassword(password);
-        user.setIsadmin((byte)0);
+        user.setUserPassword(password);
+        user.setIdentify(identify);
+        user.setQuestion(question);
+        user.setAnswer(answer);
         return userMapper.insertSelective(user);
     }
 
     @Override
     public void setPassword(Integer id, String password) {
         User user = new User();
-        user.setUserid(id);
-        user.setUserpassword(password);
+        user.setUserId(id);
+        user.setUserPassword(password);
         userMapper.updateByPrimaryKeySelective(user);
     }
 
@@ -93,8 +96,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer deleteUser(User user) {
-        if(user.getUserid() == 1) return 0;
-        return userMapper.deleteByPrimaryKey(user.getUserid());
+        if(user.getUserId() == 1) return 0;
+        return userMapper.deleteByPrimaryKey(user.getUserId());
     }
 
     @Override
