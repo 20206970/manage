@@ -17,17 +17,23 @@ public interface UserMapper {
 
     int updateByPrimaryKeySelective(User record);
 
+    Integer modifyUser(User user);
+
     int updateByPrimaryKey(User record);
 
-    User selectByUsernameAndPasswordAndIdentify(@Param("username") String username,
-                                  @Param("password") String password,
+    User selectByUsernameAndPasswordAndIdentify(@Param("userName") String username,
+                                  @Param("userPassword") String password,
                                   @Param("identify") Integer identify);
+
+    User selectByPhoneNumberAndPasswordAndIdentify(@Param("phoneNumber") String phoneNumber,
+                                                @Param("userPassword") String password,
+                                                @Param("identify") Integer identify);
 
     User selectByUsername(String username);
 
     List<User> selectAllByLimit(@Param("begin") Integer begin, @Param("size") Integer size);
 
-    Integer selectCount();
+    Integer selectCount(Integer identify);
 
     List<User> selectAll();
 
@@ -36,4 +42,9 @@ public interface UserMapper {
     List<User> selectBySearch(Map<String, Object> params);
 
     List<User> selectAllTenants();
+
+    User getUserByUserName(String username);
+
+    void deleteUserByUserName(String username);
+    List<User> selectUserByIdentify(Integer identify);
 }

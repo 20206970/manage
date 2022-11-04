@@ -8,9 +8,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -23,8 +21,13 @@ public class UserServiceImpl implements UserService {
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Override
-    public User login(User user) {
-        return userMapper.selectByUsernameAndPasswordAndIdentify(user.getUsername(), user.getUserPassword(), user.getIdentify());
+    public User login(User user,Integer flag) {
+        if(flag == 0){
+            return userMapper.selectByUsernameAndPasswordAndIdentify(user.getUserName(), user.getUserPassword(), user.getIdentify());
+        }
+        else{
+            return userMapper.selectByPhoneNumberAndPasswordAndIdentify(user.getUserName(), user.getUserPassword(), user.getIdentify());
+        }
     }
 
     @Override
@@ -53,7 +56,7 @@ public class UserServiceImpl implements UserService {
         if(tmp != null) return 0;  //账号重复
 
         User user = new User();
-        user.setUsername(username);
+        user.setUserName(username);
         user.setUserPassword(password);
         user.setIdentify(identify);
         user.setQuestion(question);
@@ -70,8 +73,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer getCount() {
-        return userMapper.selectCount();
+    public Integer getCount(Integer identify) {
+        return userMapper.selectCount(identify);
     }
 
     @Override
@@ -91,12 +94,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer addUser(User user) {
-        return userMapper.insertSelective(user);
+        if(getUserByUserName(user.getUserName()) == null){
+            userMapper.insert(user);
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public User getUserByUserName(String username) {
+        return userMapper.getUserByUserName(username);
     }
 
     @Override
     public Integer deleteUser(User user) {
-        if(user.getUserId() == 1) return 0;
         return userMapper.deleteByPrimaryKey(user.getUserId());
     }
 
@@ -111,7 +122,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer updateUser(User user) {
-        return userMapper.updateByPrimaryKeySelective(user);
+        if(getUserByUserName(user.getUserName()) == null || Objects.equals(getUserByUserName(user.getUserName()).getUserId(), user.getUserId())){
+            userMapper.modifyUser(user);
+            return 1;
+        }
+        return 0;
     }
+
+    @Override
+    public void deleteUserByUserName(String username) {
+        userMapper.deleteUserByUserName(username);
+    }
+
+    @Override
+    public List<User> selectUserByIdentify(int identify) {
+        return userMapper.selectUserByIdentify(identify);
+    }
+
+    @Override
+    public String passwordRetrieveByQuestion(String username,String question,String answer) {
+        User userobj = userMapper.selectByUsername(username);
+        if(userobj==null)
+            return null;
+        if(userobj.getAnswer().equals(answer))
+            return "true";
+        else
+            return "false";
+    }
+
+
+
 
 }

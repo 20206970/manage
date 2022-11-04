@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.db.bms.mapper.GroupMapper">
+    <resultMap id="BaseResultMap" type="com.db.bms.model.Group">
+        <id column="group_id" jdbcType="INTEGER" property="groupId" />
+        <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        group_id, user_id, group_name
+    </sql>
+    <select id="selectGroupByGroupName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from `group`
+        where group_name = #{groupName,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteGroupByPrimary" parameterType="java.lang.Integer">
+        delete from `group`
+        where group_id = #{groupId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insertGroup" parameterType="com.db.bms.model.Group">
+        insert into `group`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="groupName != null">
+                group_name,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">
+                #{groupId,jdbcType=INTEGER},
+            </if>
+            <if test="groupName != null">
+                #{groupName,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateGroupByPrimaryKey" parameterType="com.db.bms.model.Group">
+        update `group`
+        <set>
+            <if test="groupName != null">
+                group_name = #{groupName,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="groupId != null">
+                group_id = #{groupId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where group_id = #{groupId,jdbcType=INTEGER}
+    </update>
+    <select id="selectGroupByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from `group`
+        where user_id = #{userId}
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(*) from group
+    </select>
+    <select id="selectCountBySearch" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from `group`
+        where identify = #{identify,jdbcType=INTEGER}
+        limit #{begin}, #{size}
+    </select>
+    <!--    <select id="selectCount" resultType="int">-->
+    <!--        select count(*) from group where user_id = #{userId,jdbcType=INTEGER}-->
+    <!--    </select>-->
+
+</mapper>
