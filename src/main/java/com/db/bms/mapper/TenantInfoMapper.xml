@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.db.bms.mapper.TenantInfoMapper">
+    <resultMap id="BaseResultMap" type="com.db.bms.model.User">
+        <id column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+        <result column="identify" jdbcType="INTEGER" property="identify" />
+        <result column="question" jdbcType="VARCHAR" property="question" />
+        <result column="answer" jdbcType="VARCHAR" property="answer" />
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, user_name, user_password, identify, question, answer, phone_number
+    </sql>
+    <delete id="deleteTenantByUserName" parameterType="java.lang.String">
+        delete from user
+        where userName = #{userName,jdbcType=VARCHAR}
+    </delete>
+    <insert id="addTenant" parameterType="com.db.bms.model.User">
+        insert into user (user_name, user_password,
+                          identify, question, answer, phone_number)
+        values (#{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR},
+                #{identify,jdbcType=INTEGER}, #{question,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR},
+                #{phoneNumber,jdbcType=VARCHAR})
+    </insert>    
+
+
+    <update id="modifyTenant" parameterType="com.db.bms.model.User">
+        update user
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userPassword != null">
+                user_password = #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="question != null">
+                question = #{question,jdbcType=VARCHAR},
+            </if>
+            <if test="answer != null">
+                answer = #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number = #{phoneNumber,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where userId = #{user_id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.db.bms.model.User">
+        update user
+        set userName = #{userName,jdbcType=VARCHAR},
+            userPassword = #{userPassword,jdbcType=VARCHAR},
+            isAdmin = #{isadmin,jdbcType=TINYINT}
+        where userId = #{userId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByUsernameAndPasswordAndIdentify" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user
+        where userName = #{userName}
+        and userPassword = #{password}
+        and identify = #{identify}
+        limit 1
+    </select>
+    <select id="getAllTenants" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user
+        where identify = #{identify,jdbcType=INTEGER}
+    </select>
+    <select id="getTenantByUserName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user
+        where user_name = #{userName}
+        limit 1
+    </select>
+    <select id="selectAllByLimit" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from user
+        limit #{begin}, #{size}
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(*) from user
+    </select>
+    <select id="selectAllTenants" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from user
+        where identify = #{identify}
+    </select>
+    <select id="selectCountBySearch" resultType="int">
+        select count(*) from user
+        <where>
+            <if test="userName != null and userName != '' ">
+                and userName like concat('%',#{userName},'%')
+            </if>
+        </where>
+    </select>
+    <select id="selectBySearch" resultMap="BaseResultMap">
+        select userId, userName, userPassword, isAdmin
+        from user
+        <where>
+            <if test="userName != null and userName != '' ">
+                and userName like concat('%',#{userName},'%')
+            </if>
+        </where>
+        limit #{begin}, #{size}
+    </select>
+</mapper>

@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="houduan1" />
+        <module name="BookManagerApi" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -17,6 +18,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="BookManagerApi" options="-parameters" />
       <module name="houduan1" options="-parameters" />
       <module name="qianduan1" options="-parameters" />
       <module name="untitled" options="-parameters" />

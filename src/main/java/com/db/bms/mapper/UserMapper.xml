@@ -3,10 +3,10 @@
 <mapper namespace="com.db.bms.mapper.UserMapper">
   <resultMap id="BaseResultMap" type="com.db.bms.model.User">
     <id column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="user_name" jdbcType="VARCHAR" property="username" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="user_password" jdbcType="VARCHAR" property="userPassword" />
-    <result column="identify" jdbcType="INT" property="identify" />
-    <result column="question" jdbcType="VARCHAR" property="identify" />
+    <result column="identify" jdbcType="INTEGER" property="identify" />
+    <result column="question" jdbcType="VARCHAR" property="question" />
     <result column="answer" jdbcType="VARCHAR" property="answer" />
     <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
   </resultMap>
@@ -19,95 +19,72 @@
     from user
     where userId = #{userId,jdbcType=INTEGER}
   </select>
+
+  <select id="getUserByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where user_name = #{userName,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from user
-    where userId = #{userId,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteUserByUserName" parameterType="java.lang.String">
+    delete from user
+    where user_name = #{userName,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.db.bms.model.User">
-    insert into user (userId, userName, userPassword, 
-      identify)
-    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR}, 
-      #{identify,jdbcType=INTEGER})
+    insert into user (user_name, user_password,
+      identify, question, answer,phone_number)
+    values (#{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR}, #{identify,jdbcType=INTEGER},
+            #{question,jdbcType=VARCHAR},#{answer,jdbcType=VARCHAR},#{phoneNumber,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.db.bms.model.User">
-    insert into user
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        userId,
-      </if>
-      <if test="username != null">
-        userName,
-      </if>
-      <if test="userPassword != null">
-        userPassword,
-      </if>
-      <if test="identify != null">
-        identify,
-      </if>
-      <if test="question != null">
-        question,
-      </if>
-      <if test="answer != null">
-        answer,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="username != null">
-        #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="userPassword != null">
-        #{userPassword,jdbcType=VARCHAR},
-      </if>
-      <if test="identity != null">
-        #{identify,jdbcType=INTEGER},
-      </if>
-      <if test="question != null">
-        #{question,jdbcType=VARCHAR},
-      </if>
-      <if test="answer != null">
-        #{answer,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.db.bms.model.User">
+  <update id="modifyUser" parameterType="com.db.bms.model.User">
     update user
     <set>
-      <if test="username != null">
-        userName = #{username,jdbcType=VARCHAR},
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
       </if>
       <if test="userPassword != null">
-        userPassword = #{userPassword,jdbcType=VARCHAR},
+        user_password = #{userPassword,jdbcType=VARCHAR},
       </if>
-      <if test="isadmin != null">
-        isAdmin = #{isadmin,jdbcType=TINYINT},
+      <if test="question != null">
+        question = #{question,jdbcType=VARCHAR},
       </if>
+      <if test="answer != null">
+        answer = #{answer,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNumber != null">
+        phone_number = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+
     </set>
-    where userId = #{userId,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.db.bms.model.User">
-    update user
-    set userName = #{username,jdbcType=VARCHAR},
-      userPassword = #{userPassword,jdbcType=VARCHAR},
-      isAdmin = #{isadmin,jdbcType=TINYINT}
-    where userId = #{userId,jdbcType=INTEGER}
-  </update>
+
   <select id="selectByUsernameAndPasswordAndIdentify" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from user
-    where userName = #{username}
-      and userPassword = #{password}
-      and identify = #{identify}
+    where user_name = #{userName}
+      and user_password = #{userPassword}
+    limit 1
+  </select>
+
+  <select id="selectByPhoneNumberAndPasswordAndIdentify" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where phone_number = #{phoneNumber}
+    and user_password = #{userPassword}
     limit 1
   </select>
   <select id="selectByUsername" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from user
-    where userName = #{username}
+    where user_name = #{userName}
     limit 1
   </select>
   <select id="selectAllByLimit" resultMap="BaseResultMap">
@@ -116,7 +93,7 @@
     limit #{begin}, #{size}
   </select>
   <select id="selectCount" resultType="int">
-    select count(*) from user
+    select count(*) from user where identify = #{identify,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
@@ -124,20 +101,18 @@
   </select>
   <select id="selectCountBySearch" resultType="int">
     select count(*) from user
-    <where>
-      <if test="username != null and username != '' ">
-        and userName like concat('%',#{username},'%')
-      </if>
-    </where>
+    where identify = #{identify,jdbcType=INTEGER}
   </select>
   <select id="selectBySearch" resultMap="BaseResultMap">
-    select userId, userName, userPassword, isAdmin
+    select <include refid="Base_Column_List" />
     from user
-    <where>
-      <if test="username != null and username != '' ">
-        and userName like concat('%',#{username},'%')
-      </if>
-    </where>
+    where identify = #{identify,jdbcType=INTEGER}
     limit #{begin}, #{size}
+  </select>
+  <select id="selectUserByIdentify" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where identify = #{identify,jdbcType=INTEGER}
   </select>
 </mapper>

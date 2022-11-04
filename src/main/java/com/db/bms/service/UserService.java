@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface UserService {
 
-    User login(User user);
+    User login(User user,Integer flag);
 
     void saveUser(String token, User user);
 
@@ -19,7 +19,7 @@ public interface UserService {
 
     void setPassword(Integer id, String password);
 
-    Integer getCount();
+    Integer getCount(Integer identify);
 
     List<User> queryUsers();
 
@@ -29,9 +29,17 @@ public interface UserService {
 
     Integer addUser(User user);
 
+    User getUserByUserName(String username);
+
     Integer deleteUser(User user);
 
     Integer deleteUsers(List<User> users);
 
     Integer updateUser(User user);
+
+    void deleteUserByUserName(String username);
+
+    List<User> selectUserByIdentify(int identify);
+
+    String passwordRetrieveByQuestion(String username, String question, String password);
 }
